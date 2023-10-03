@@ -48,8 +48,17 @@ class Snake(Game_Object):
         self.position_list.insert(0, new_position)
         self.position_list.pop()
 
-    def change_direction(self, new_direction: Direction) -> None:
-        self.direction = new_direction
+    def up(self) -> None:
+        self.direction = Up()
+
+    def down(self) -> None:
+        self.direction = Down()
+
+    def left(self) -> None:
+        self.direction = Left()
+
+    def right(self) -> None:
+        self.direction = Right()
 
     def grow(self) -> None:
         new_position = self.head + self.direction.delta
