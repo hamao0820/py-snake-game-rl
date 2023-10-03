@@ -1,40 +1,6 @@
-from abc import ABC, abstractproperty
-
+from direction import Direction, Down, Left, Right, Up
 from game_object import Game_Object
 from position import Position
-
-
-class Direction(ABC):
-    def __init__(self):
-        return
-
-    @abstractproperty
-    def delta(self) -> tuple[int, int]:
-        pass
-
-
-class Right(Direction):
-    @property
-    def delta(self) -> tuple[int, int]:
-        return (1, 0)
-
-
-class Left(Direction):
-    @property
-    def delta(self) -> tuple[int, int]:
-        return (-1, 0)
-
-
-class Up(Direction):
-    @property
-    def delta(self) -> tuple[int, int]:
-        return (0, -1)
-
-
-class Down(Direction):
-    @property
-    def delta(self) -> tuple[int, int]:
-        return (0, 1)
 
 
 class Snake(Game_Object):
