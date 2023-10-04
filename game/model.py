@@ -12,8 +12,8 @@ class Model:
     def __init__(self):
         self.stage = Stage()
         self.snake = Snake()
-        self.food = Food()
         self.score = Score()
+        self.food = Food(self.get_empty_position())
         self.game_over = False
 
     def update(self):
@@ -21,13 +21,16 @@ class Model:
         if Judger.check_collision_food(self.snake, self.food):
             self.snake.grow()
             self.score.add()
+            self.food = Food(self.get_empty_position())
             self.set_food()
         if Judger.check_collision_self(self.snake) or Judger.check_collision_wall(self.snake):
             self.game_over = True
 
-    def set_food(self):
+    def get_empty_position(self) -> Position:
         while True:
             pos = Position(random.randint(1, Stage.WIDTH), random.randint(1, Stage.HEIGHT))
             if pos not in self.snake.position_list:
-                break
-        self.food = Food(pos)
+                return pos
+
+    def is_game_over(self):
+        return self.game_over
