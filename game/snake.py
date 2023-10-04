@@ -7,17 +7,21 @@ class Snake:
         self._position_list: list[Position] = [Position(x=3, y=8), Position(x=2, y=8)]
         self.direction: Direction = Right()
         self.prev_direction: Direction = Right()
+        self.grow_flag: bool = False
         pass
 
     def move(self) -> None:
         self._position_list.insert(0, self.next_position)
-        self._position_list.pop()
+        if not self.grow_flag:
+            self._position_list.pop()
+        self.grow_flag = False
         self.prev_direction = self.direction
 
-    # prev_directionの方向に進む
     def move_according_to_inertia(self) -> None:
         self._position_list.insert(0, self.head + self.prev_direction.delta)
-        self._position_list.pop()
+        if not self.grow_flag:
+            self._position_list.pop()
+        self.grow_flag = False
 
     def up(self) -> None:
         self.direction = Up()
@@ -32,7 +36,7 @@ class Snake:
         self.direction = Right()
 
     def grow(self) -> None:
-        self._position_list.insert(0, self.next_position)
+        self.grow_flag = True
 
     @property
     def position_list(self) -> list[Position]:
