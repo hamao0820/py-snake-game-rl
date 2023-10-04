@@ -1,9 +1,8 @@
 from direction import Direction, Down, Left, Right, Up
-from game_object import Game_Object
 from position import Position
 
 
-class Snake(Game_Object):
+class Snake():
     def __init__(self) -> None:
         self._position_list: list[Position] = [Position(x=3, y=8), Position(x=2, y=8)]
         self.direction: Direction = Right()

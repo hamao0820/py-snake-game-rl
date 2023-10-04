@@ -1,8 +1,7 @@
-from game_object import Game_Object
 from position import Position
 
 
-class Food(Game_Object):
+class Food():
     def __init__(self, pos: Position):
         self._pos = pos
         pass
