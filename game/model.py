@@ -21,12 +21,11 @@ class Model:
         try:
             if Judger.check_back(self.snake):
                 self.snake.move_according_to_inertia()
-                self.game_over = True
                 return
-        except IndexError:
+        except ValueError:
             self.game_over = True
             return
-        
+
         try:
             self.snake.move()
         except ValueError:
