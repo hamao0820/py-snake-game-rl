@@ -23,7 +23,7 @@ class Train:
         device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
         def to_normalized_tensor(arr: np.ndarray) -> torch.Tensor:
-            return torch.tensor((arr - arr.min()) / (arr.max() - arr.min()))
+            return torch.tensor((arr - arr.min()) / (arr.max() - arr.min() + 0.01))
 
         env = Env()
         agent = Agent(n_frame=n_frame, device=device, action_space=env.action_space)
