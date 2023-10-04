@@ -28,6 +28,6 @@ class Model:
     def set_food(self):
         while True:
             pos = Position(random.randint(1, Stage.WIDTH), random.randint(1, Stage.HEIGHT))
-            if self.stage.is_empty(pos):
+            if pos not in self.snake.position_list:
                 break
         self.food = Food(pos)
