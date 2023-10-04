@@ -4,8 +4,9 @@ import random
 import torch
 import torch.nn as nn
 import torch.optim as optim
+
 from .nnet import Dueling_Network
-from replay_memory import ReplayMemory, Transition
+from .replay_memory import ReplayMemory, Transition
 
 
 class Agent:

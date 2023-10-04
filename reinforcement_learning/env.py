@@ -1,5 +1,3 @@
-from typing import Tuple, cast
-
 import numpy as np
 
 from game.controller import Controller
@@ -15,13 +13,13 @@ class Env:
         self.prev_score = 0
         return
 
-    def reset(self) -> Tuple[np.ndarray, dict]:
+    def reset(self) -> tuple[np.ndarray, dict]:
         self.model = Model()
         self.controller = Controller(self.model)
         array = np.array(self.model.board)
         return array, {}
 
-    def step(self, action: ActionSpace) -> Tuple[np.ndarray, float, bool, bool, dict]:
+    def step(self, action: ActionSpace) -> tuple[np.ndarray, float, bool, bool, dict]:
         if isinstance(action, Up):
             self.controller.handle_up()
         elif isinstance(action, Right):
