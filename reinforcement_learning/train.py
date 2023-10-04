@@ -27,8 +27,7 @@ class Train:
             return torch.tensor((arr - arr.min()) / (arr.max() - arr.min()))
 
         env = Env()
-        n_actions = env.action_space.n
-        agent = Agent(n_frame=n_frame, device=device, state_dict_path="")
+        agent = Agent(n_frame=n_frame, device=device, action_space=env.action_space)
 
         terminated = True
         frame1 = True
@@ -52,8 +51,7 @@ class Train:
                 total_steps += 1
                 action, eps_threshold = agent.e_greedy_select_action(state_frame, steps_done)
                 steps_done += 1
-                # FIXME: ValueError: Invalid action
-                observation, reward, terminated, truncated, info = env.step(action.item())
+                observation, reward, terminated, truncated, info = env.step(action)
 
                 done = terminated or truncated
 
