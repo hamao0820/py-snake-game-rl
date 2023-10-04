@@ -1,6 +1,5 @@
 from itertools import count
 
-import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -12,14 +11,14 @@ from .env import Env
 
 class Train:
     def __init__(self):
-        num_episodes = 100000  # 学習させるエピソード数
+        num_episodes = 10000000  # 学習させるエピソード数
 
         n_frame = 1
         reward_clipping = True  # 報酬のクリッピング
         stage_size = 16  # ステージのサイズ
 
-        num_episode_plot = torch.tensor([10])  # 何エピソードで学習の進捗を確認するか
-        num_episode_save = 10  # 何エピソードでモデルを保存するか
+        num_episode_plot = torch.tensor([300])  # 何エピソードで学習の進捗を確認するか
+        num_episode_save = 100  # 何エピソードでモデルを保存するか
 
         device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
