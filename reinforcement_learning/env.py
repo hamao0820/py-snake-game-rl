@@ -1,4 +1,6 @@
+import matplotlib.pyplot as plt
 import numpy as np
+import PIL.Image as Image
 
 from game.controller import Controller
 from game.model import Model
@@ -17,6 +19,7 @@ class Env:
         self.model = Model()
         self.controller = Controller(self.model)
         array = np.array(self.model.board)
+        self.frames = []
         return array, {}
 
     def step(self, action: Action) -> tuple[np.ndarray, float, bool, bool, dict]:
@@ -32,6 +35,7 @@ class Env:
             raise ValueError("Invalid action")
 
         self.model.update()
+        self.frames.append(self.to_image(self.model.board))
 
         observation = np.array(self.model.board)
         terminated = self.model.is_game_over()
@@ -42,8 +46,27 @@ class Env:
 
         return observation, reward, terminated, truncated, {}
 
+    def to_image(self, board: list[list[int]]) -> np.ndarray:
+        image = np.zeros((len(board), len(board[0]), 3), dtype=np.uint8)
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if self.model.board[i][j] == 1:
+                    image[i][j] = [0, 0, 255]
+                elif self.model.board[i][j] == 2:
+                    image[i][j] = [0, 255, 0]
+                elif self.model.board[i][j] == 3:
+                    image[i][j] = [255, 0, 0]
+        return image
+
     def render(self, fname: str = "snake-game") -> None:
-        pass
+        images = [Image.fromarray(frame) for frame in self.frames]
+        images[0].save(
+            f"img/{fname}.gif",
+            save_all=True,
+            append_images=images[1:],
+            duration=100,
+            loop=0,
+        )
 
     @property
     def action_space(self) -> ActionSpace:
