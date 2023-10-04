@@ -5,14 +5,14 @@ from position import Position
 
 class Snake(Game_Object):
     def __init__(self) -> None:
-        self.position_list: list[Position] = [Position(x=3, y=8), Position(x=2, y=8)]
+        self._position_list: list[Position] = [Position(x=3, y=8), Position(x=2, y=8)]
         self.direction: Direction = Right()
         pass
 
     def move(self) -> None:
         new_position = self.head + self.direction.delta
-        self.position_list.insert(0, new_position)
-        self.position_list.pop()
+        self._position_list.insert(0, new_position)
+        self._position_list.pop()
 
     def up(self) -> None:
         self.direction = Up()
@@ -28,12 +28,16 @@ class Snake(Game_Object):
 
     def grow(self) -> None:
         new_position = self.head + self.direction.delta
-        self.position_list.insert(0, new_position)
+        self._position_list.insert(0, new_position)
+
+    @property
+    def position_list(self) -> list[Position]:
+        return self._position_list
 
     @property
     def head(self) -> Position:
-        return self.position_list[0]
+        return self._position_list[0]
 
     @property
     def body(self) -> list[Position]:
-        return self.position_list[1:]
+        return self._position_list[1:]
