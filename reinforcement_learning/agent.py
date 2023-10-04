@@ -30,6 +30,7 @@ class Agent:
         self.memory = ReplayMemory(Agent.SIZE_REPLAY_MEMORY)
         self.optimizer = optim.AdamW(self.policy_net.parameters(), lr=Agent.LR, amsgrad=True)
 
+    # FIXME: actionをenv.action_spaceから取得するようにする
     def e_greedy_select_action(self, state: torch.Tensor, steps_done) -> tuple[torch.Tensor, float]:
         eps_threshold = Agent.EPS_END + (Agent.EPS_START - Agent.EPS_END) * math.exp(
             -1.0 * steps_done / Agent.EPS_DECAY
