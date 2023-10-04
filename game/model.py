@@ -17,6 +17,9 @@ class Model:
         self.game_over = False
 
     def update(self):
+        if Judger.check_back(self.snake):
+            self.snake.move_according_to_inertia()
+            return
         self.snake.move()
         if Judger.check_collision_food(self.snake, self.food):
             self.snake.grow()
