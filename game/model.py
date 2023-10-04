@@ -36,3 +36,14 @@ class Model:
 
     def is_game_over(self):
         return self.game_over
+
+    @property
+    def board(self) -> list[list[int]]:
+        board = [[0 for _ in range(Stage.WIDTH)] for _ in range(Stage.HEIGHT)]
+        board[self.snake.head.y - 1][self.snake.head.x - 1] = 1
+        for body in self.snake.body:
+            board[body.y - 1][body.x - 1] = 2
+
+        board[self.food.pos.y - 1][self.food.pos.x - 1] = 3
+
+        return board

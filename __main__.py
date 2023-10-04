@@ -1,5 +1,5 @@
-from demo.play import Game
+from reinforcement_learning.env import Env
 
 if __name__ == "__main__":
-    game = Game()
-    game.start()
+    env = Env()
+    env.reset()
