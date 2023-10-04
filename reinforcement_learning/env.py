@@ -42,6 +42,9 @@ class Env:
 
         return observation, reward, terminated, truncated, {}
 
+    def render(self, fname: str = "snake-game") -> None:
+        pass
+
     @property
     def action_space(self) -> ActionSpace:
         return self._action_space
