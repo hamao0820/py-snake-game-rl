@@ -25,7 +25,6 @@ class Model:
             self.snake.grow()
             self.score.add()
             self.food = Food(self.get_empty_position())
-            self.set_food()
         if Judger.check_collision_self(self.snake) or Judger.check_collision_wall(self.snake):
             self.game_over = True
 
