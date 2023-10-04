@@ -1,11 +1,11 @@
 import random
 
-from food import Food
-from judger import Judger
-from position import Position
-from score import Score
-from snake import Snake
-from stage import Stage
+from .food import Food
+from .judger import Judger
+from .position import Position
+from .score import Score
+from .snake import Snake
+from .stage import Stage
 
 
 class Model:

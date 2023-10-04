@@ -1,5 +1,5 @@
-from direction import Direction, Down, Left, Right, Up
-from position import Position
+from .direction import Direction, Down, Left, Right, Up
+from .position import Position
 
 
 class Snake:

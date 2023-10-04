@@ -1,6 +1,6 @@
-from food import Food
-from snake import Snake
-from stage import Stage
+from .food import Food
+from .snake import Snake
+from .stage import Stage
 
 
 class Judger:
