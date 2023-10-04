@@ -67,7 +67,7 @@ class Train:
 
                 if frame1 == True:
                     state_frame1 = state_frame
-                    action_frame1 = action
+                    action_frame1 = torch.tensor([[action.value]], dtype=torch.int64)
                     next_state_frame1 = next_state_frame
                     if done:
                         next_state_frame1 = torch.zeros((1, n_frame, stage_size, stage_size), dtype=torch.float32)

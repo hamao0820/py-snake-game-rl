@@ -1,29 +1,16 @@
-from abc import ABC
+from enum import Enum
 
 
-class Action(ABC):
-    pass
-
-
-class Right(Action):
-    pass
-
-
-class Left(Action):
-    pass
-
-
-class Up(Action):
-    pass
-
-
-class Down(Action):
-    pass
+class Action(Enum):
+    Right = 0
+    Left = 1
+    Up = 2
+    Down = 3
 
 
 class ActionSpace:
     def __init__(self) -> None:
-        self._value = [Right(), Left(), Up(), Down()]
+        self._value = [Action.Right, Action.Left, Action.Up, Action.Down]
         return
 
     @property

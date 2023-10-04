@@ -3,7 +3,7 @@ import numpy as np
 from game.controller import Controller
 from game.model import Model
 
-from .action_space import ActionSpace, Down, Left, Right, Up
+from .action_space import Action, ActionSpace
 
 
 class Env:
@@ -19,14 +19,14 @@ class Env:
         array = np.array(self.model.board)
         return array, {}
 
-    def step(self, action: ActionSpace) -> tuple[np.ndarray, float, bool, bool, dict]:
-        if isinstance(action, Up):
+    def step(self, action: Action) -> tuple[np.ndarray, float, bool, bool, dict]:
+        if action == Action.Up:
             self.controller.handle_up()
-        elif isinstance(action, Right):
+        elif action == Action.Right:
             self.controller.handle_right()
-        elif isinstance(action, Down):
+        elif action == Action.Down:
             self.controller.handle_down()
-        elif isinstance(action, Left):
+        elif action == Action.Left:
             self.controller.handle_left()
         else:
             raise ValueError("Invalid action")
