@@ -16,6 +16,10 @@ class Model:
         self.food = Food(self.get_empty_position())
         self.game_over = False
         self._board = [[0 for _ in range(Stage.WIDTH)] for _ in range(Stage.HEIGHT)]
+        self._board[self.snake.head.y - 1][self.snake.head.x - 1] = 1
+        for body in self.snake.body:
+            self._board[body.y - 1][body.x - 1] = 2
+        self._board[self.food.pos.y - 1][self.food.pos.x - 1] = 3
 
     def update(self):
         try:

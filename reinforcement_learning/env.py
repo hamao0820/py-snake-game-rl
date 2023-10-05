@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import PIL.Image as Image
 
@@ -12,6 +11,7 @@ class Env:
     def __init__(self) -> None:
         self._action_space = ActionSpace()
         self.frames: list[np.ndarray] = []
+        self.actions: list[Action] = []
         self.prev_score = 0
         return
 
@@ -19,7 +19,8 @@ class Env:
         self.model = Model()
         self.controller = Controller(self.model)
         array = np.array(self.model.board)
-        self.frames = []
+        self.frames = [self.to_image(self.model.board)]
+        self.actions = []
         return array, {}
 
     def step(self, action: Action) -> tuple[np.ndarray, float, bool, bool, dict]:
@@ -36,6 +37,7 @@ class Env:
 
         self.model.update()
         self.frames.append(self.to_image(self.model.board))
+        self.actions.append(action)
 
         observation = np.array(self.model.board)
         terminated = self.model.is_game_over()
@@ -67,6 +69,10 @@ class Env:
             duration=100,
             loop=0,
         )
+        f = open("actions/list.txt", "w")
+        for x in self.actions:
+            f.write(str(x) + "\n")
+        f.close()
 
     @property
     def action_space(self) -> ActionSpace:
