@@ -11,25 +11,20 @@ from .env import Env
 
 class Train:
     def __init__(self):
-        num_episodes = 10000000  # 学習させるエピソード数
+        num_episodes = 100000  # 学習させるエピソード数
 
-        n_frame = 1
         reward_clipping = True  # 報酬のクリッピング
-        stage_size = 16  # ステージのサイズ
 
         num_episode_plot = torch.tensor([300])  # 何エピソードで学習の進捗を確認するか
         num_episode_save = 100  # 何エピソードでモデルを保存するか
 
         device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-
-        def to_normalized_tensor(arr: np.ndarray) -> torch.Tensor:
-            return torch.tensor((arr - arr.min()) / (arr.max() - arr.min() + 0.01))
+        device = torch.device("cpu")
 
         env = Env()
-        agent = Agent(n_frame=n_frame, device=device, action_space=env.action_space)
+        agent = Agent(device=device, action_space=env.action_space)
 
         terminated = True
-        frame1 = True
         total_steps = 0
         count_update = 0
         steps_done = 0
@@ -37,56 +32,35 @@ class Train:
         reward_durations = []
 
         for i_episode in tqdm(range(num_episodes)):
-            reward_frame = torch.tensor([0], dtype=torch.float32)
             if terminated == True:
-                state_frame = torch.zeros((1, n_frame, stage_size, stage_size), dtype=torch.float32)
-                next_state_frame = torch.zeros((1, n_frame, stage_size, stage_size), dtype=torch.float32)
                 state, info = env.reset()
-                t_state = to_normalized_tensor(state)
-                state_frame[:, 0, :, :] = t_state
-                next_state_frame[:, 0, :, :] = t_state
+                t_state = torch.tensor(state, dtype=torch.float)
 
             for t in count():
                 total_steps += 1
-                action, eps_threshold = agent.e_greedy_select_action(state_frame, steps_done)
+                action, eps_threshold = agent.e_greedy_select_action(t_state, steps_done)
+                t_action = torch.tensor([[action.value]])
                 steps_done += 1
                 observation, reward, terminated, truncated, info = env.step(action)
-
+                t_observation = torch.tensor(observation, dtype=torch.float)
                 done = terminated or truncated
 
-                t_reward = torch.tensor([reward])
+                t_reward = torch.tensor([reward], dtype=torch.float)
                 reward_all += t_reward
                 if reward_clipping:  # 報酬のクリッピング
                     t_reward = torch.clamp(input=t_reward, min=-1, max=1)
 
-                next_state = to_normalized_tensor(observation)
-                # rollして一番古いフレームを新しいフレームで上書きする
-                next_state_frame = torch.roll(input=next_state_frame, shifts=1, dims=1)
-                next_state_frame[:, 0, :, :] = next_state
+                agent.push_memory(t_state, t_action, t_observation, t_reward)
 
-                if frame1 == True:
-                    state_frame1 = state_frame
-                    action_frame1 = torch.tensor([[action.value]], dtype=torch.int64)
-                    next_state_frame1 = next_state_frame
-                    if done:
-                        next_state_frame1 = torch.zeros((1, n_frame, stage_size, stage_size), dtype=torch.float32)
-                    frame1 = False
+                t_state = t_observation
 
-                reward_frame += t_reward
+                count_update += 1
+                if count_update % 4 == 0:
+                    if count_update > agent.SIZE_REPLAY_MEMORY:
+                        agent.update()
+                if count_update % 400 == 0:
+                    agent.sync_target()
 
-                if (total_steps % n_frame == 0) or done:
-                    agent.push_memory(state_frame1, action_frame1, next_state_frame1, reward_frame)
-                    frame1 = True
-                    reward_frame = torch.tensor([0], dtype=torch.float32)
-
-                    count_update += 1
-                    if count_update % 4 == 0:
-                        if count_update > agent.SIZE_REPLAY_MEMORY:
-                            agent.update()
-                    if count_update % 400 == 0:
-                        agent.sync_target()
-
-                state_frame = next_state_frame
                 if done:
                     break
             if i_episode % num_episode_plot == 0:
@@ -107,4 +81,4 @@ class Train:
                     env.render()
 
         agent.save()
-        env.close()
+        env.render()

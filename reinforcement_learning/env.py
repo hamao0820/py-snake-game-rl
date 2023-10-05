@@ -2,6 +2,7 @@ import numpy as np
 import PIL.Image as Image
 
 from game.model import Model
+from game.direction import Right, Left, Up, Down
 
 from .action_space import Action, ActionSpace
 
@@ -16,9 +17,10 @@ class Env:
 
     def reset(self) -> tuple[np.ndarray, dict]:
         self.model = Model()
-        array = np.array(self.model.board)
+        array = self._get_state()
         self.frames = [self.to_image(self.model.board)]
         self.actions = []
+        self.prev_score = 0
         return array, {}
 
     def step(self, action: Action) -> tuple[np.ndarray, float, bool, bool, dict]:
@@ -35,10 +37,14 @@ class Env:
         self.frames.append(self.to_image(self.model.board))
         self.actions.append(action)
 
-        observation = np.array(self.model.board)
+        try:
+            observation = self._get_state()
+        except IndexError:
+            observation = np.zeros((1, 16 * 16 * 3 + 4), dtype=np.uint8)
         terminated = self.model.is_game_over()
         truncated = False
         reward = self.model.score.score - self.prev_score
+        self.prev_score = self.model.score.score
         if self.model.game_over:
             reward = -1
 
@@ -55,6 +61,30 @@ class Env:
                 elif self.model.board[i][j] == 3:
                     image[i][j] = [255, 0, 0]
         return image
+
+    def _get_state(self) -> np.ndarray:
+        food_one_hot = np.zeros((len(self.model.board), len(self.model.board[0])), dtype=np.uint8)
+        food_one_hot[self.model.food.pos.y - 1][self.model.food.pos.x - 1] = 1
+        head_one_hot = np.zeros((len(self.model.board), len(self.model.board[0])), dtype=np.uint8)
+        head_one_hot[self.model.snake.head.y - 1][self.model.snake.head.x - 1] = 1
+        body_one_hot = np.zeros((len(self.model.board), len(self.model.board[0])), dtype=np.uint8)
+        for body in self.model.snake.body:
+            body_one_hot[body.y - 1][body.x - 1] = 1
+        direction_one_hot = np.array(
+            [
+                isinstance(self.model.snake.direction, Right),
+                isinstance(self.model.snake.direction, Left),
+                isinstance(self.model.snake.direction, Up),
+                isinstance(self.model.snake.direction, Down),
+            ],
+            dtype=np.uint8,
+        )
+        return np.expand_dims(
+            np.concatenate(
+                [food_one_hot.flatten(), head_one_hot.flatten(), body_one_hot.flatten(), direction_one_hot], axis=0
+            ),
+            axis=0,
+        )
 
     def render(self, fname: str = "snake-game") -> None:
         images = [Image.fromarray(frame) for frame in self.frames]

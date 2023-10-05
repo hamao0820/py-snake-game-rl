@@ -20,13 +20,11 @@ class Agent:
     TAU = 0.005
     LR = 1e-4
 
-    def __init__(
-        self, n_frame: int, device: torch.device, action_space: ActionSpace, state_dict_path: str | None = None
-    ):
+    def __init__(self, device: torch.device, action_space: ActionSpace, state_dict_path: str | None = None):
         self.device = device
         self.action_space = action_space
-        self.policy_net = Dueling_Network(n_frame=n_frame, n_actions=self.action_space.n).to(device)
-        self.target_net = Dueling_Network(n_frame=n_frame, n_actions=self.action_space.n).to(device)
+        self.policy_net = Dueling_Network(n_actions=self.action_space.n).to(device)
+        self.target_net = Dueling_Network(n_actions=self.action_space.n).to(device)
         if state_dict_path is not None:
             self.policy_net.load_state_dict(torch.load(state_dict_path))
         self.target_net.load_state_dict(self.policy_net.state_dict())
