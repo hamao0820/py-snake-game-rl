@@ -1,6 +1,6 @@
 import os
 
-from pynput.keyboard import Key, Listener
+from pynput.keyboard import Listener
 
 from game.model import Model
 from game.stage import Stage
