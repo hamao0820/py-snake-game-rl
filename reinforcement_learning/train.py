@@ -22,7 +22,9 @@ class Train:
         device = torch.device("cpu")
 
         env = Env()
-        agent = Agent(device=device, action_space=env.action_space)
+        agent = Agent(
+            device=device, action_space=env.action_space, state_dict_path="model_weights/1/snake-game_policy.pth"
+        )
 
         terminated = True
         total_steps = 0

@@ -12,7 +12,6 @@ class Env:
         self._action_space = ActionSpace()
         self.frames: list[np.ndarray] = []
         self.actions: list[Action] = []
-        self.prev_score = 0
         return
 
     def reset(self) -> tuple[np.ndarray, dict]:
@@ -20,7 +19,6 @@ class Env:
         array = self._get_state()
         self.frames = [self.to_image(self.model.board)]
         self.actions = []
-        self.prev_score = 0
         return array, {}
 
     def step(self, action: Action) -> tuple[np.ndarray, float, bool, bool, dict]:
@@ -43,8 +41,7 @@ class Env:
             observation = np.zeros((1, 16 * 16 * 3 + 4), dtype=np.uint8)
         terminated = self.model.is_game_over()
         truncated = False
-        reward = self.model.score.score - self.prev_score
-        self.prev_score = self.model.score.score
+        reward = min(1, self.model.score.score / 30)
         if self.model.game_over:
             reward = -1
 
