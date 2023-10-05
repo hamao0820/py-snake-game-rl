@@ -23,14 +23,6 @@ class Model:
 
     def update(self):
         try:
-            if Judger.check_back(self.snake):
-                self.snake.move_according_to_inertia()
-                return
-        except ValueError:
-            self.game_over = True
-            return
-
-        try:
             self.snake.move()
         except ValueError:
             self.game_over = True

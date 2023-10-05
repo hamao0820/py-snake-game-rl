@@ -15,7 +15,3 @@ class Judger:
     @staticmethod
     def check_collision_food(snake: Snake, food: Food) -> bool:
         return snake.head == food.pos
-
-    @staticmethod
-    def check_back(snake: Snake) -> bool:
-        return snake.next_position == snake.body[0]

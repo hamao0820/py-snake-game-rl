@@ -1,5 +1,6 @@
 from .direction import Direction, Right
 from .position import Position
+from .stage import Stage
 
 
 class Snake:
@@ -11,13 +12,6 @@ class Snake:
 
     def move(self) -> None:
         self._position_list.insert(0, self.next_position)
-        if not self.grow_flag:
-            self._position_list.pop()
-        self.grow_flag = False
-        self.prev_direction = self.direction
-
-    def move_according_to_inertia(self) -> None:
-        self._position_list.insert(0, self.head + self.prev_direction.delta)
         if not self.grow_flag:
             self._position_list.pop()
         self.grow_flag = False
@@ -49,3 +43,48 @@ class Snake:
     @property
     def next_position(self) -> Position:
         return self.head + self.direction.delta
+
+    @property
+    def can_turn_left(self) -> bool:
+        try:
+            left_pos = self.head + self.direction.turn_left().delta
+        except ValueError:
+            return False
+
+        return (
+            left_pos.x >= 1
+            or left_pos.x <= Stage.WIDTH
+            or left_pos.y >= 1
+            or left_pos.y <= Stage.HEIGHT
+            or left_pos not in self.body
+        )
+
+    @property
+    def can_turn_right(self) -> bool:
+        try:
+            right_pos = self.head + self.direction.turn_right().delta
+        except ValueError:
+            return False
+
+        return (
+            right_pos.x >= 1
+            or right_pos.x <= Stage.WIDTH
+            or right_pos.y >= 1
+            or right_pos.y <= Stage.HEIGHT
+            or right_pos not in self.body
+        )
+
+    @property
+    def can_straight(self) -> bool:
+        try:
+            straight_pos = self.head + self.direction.straight().delta
+        except ValueError:
+            return False
+
+        return (
+            straight_pos.x >= 1
+            or straight_pos.x <= Stage.WIDTH
+            or straight_pos.y >= 1
+            or straight_pos.y <= Stage.HEIGHT
+            or straight_pos not in self.body
+        )

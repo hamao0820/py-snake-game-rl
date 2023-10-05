@@ -38,7 +38,7 @@ class Env:
         try:
             observation = self._get_state()
         except IndexError:
-            observation = np.zeros((1, 16 * 16 * 3 + 4), dtype=np.uint8)
+            observation = np.zeros((1, 16 * 16 * 3 + 4 + 4 + 3), dtype=np.uint8)
         terminated = self.model.is_game_over()
         truncated = False
         reward = min(1, self.model.score.score / 30)
@@ -76,12 +76,41 @@ class Env:
             ],
             dtype=np.uint8,
         )
-        return np.expand_dims(
+        food_direction_one_hot = np.array(
+            [
+                self.model.food.pos.x > self.model.snake.head.x,
+                self.model.food.pos.x < self.model.snake.head.x,
+                self.model.food.pos.y > self.model.snake.head.y,
+                self.model.food.pos.y < self.model.snake.head.y,
+            ],
+            dtype=np.uint8,
+        )
+
+        danger_one_hot = np.array(
+            [
+                self.model.snake.can_turn_left,
+                self.model.snake.can_turn_right,
+                self.model.snake.can_straight,
+            ],
+            dtype=np.uint8,
+        )
+
+        state = np.expand_dims(
             np.concatenate(
-                [food_one_hot.flatten(), head_one_hot.flatten(), body_one_hot.flatten(), direction_one_hot], axis=0
+                [
+                    food_one_hot.flatten(),
+                    head_one_hot.flatten(),
+                    body_one_hot.flatten(),
+                    direction_one_hot,
+                    food_direction_one_hot,
+                    danger_one_hot,
+                ],
+                axis=0,
             ),
             axis=0,
         )
+
+        return state
 
     def render(self, fname: str = "snake-game") -> None:
         images = [Image.fromarray(frame) for frame in self.frames]

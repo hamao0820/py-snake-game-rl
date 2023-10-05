@@ -6,7 +6,7 @@ class Dueling_Network(nn.Module):
     def __init__(self, n_actions) -> None:
         super(Dueling_Network, self).__init__()
         self.relu = nn.ReLU()
-        self.leaner1 = nn.Linear(772, 128)  # 16 * 16 * 3 + 4
+        self.leaner1 = nn.Linear(779, 128)  # 16 * 16 * 3 + 4 + 4 + 3
         self.leaner2 = nn.Linear(128, 64)
         self.act_fc = nn.Linear(64, 32)
         self.act_fc2 = nn.Linear(32, n_actions)
