@@ -1,7 +1,6 @@
 import numpy as np
 import PIL.Image as Image
 
-from game.controller import Controller
 from game.model import Model
 
 from .action_space import Action, ActionSpace
@@ -17,21 +16,18 @@ class Env:
 
     def reset(self) -> tuple[np.ndarray, dict]:
         self.model = Model()
-        self.controller = Controller(self.model)
         array = np.array(self.model.board)
         self.frames = [self.to_image(self.model.board)]
         self.actions = []
         return array, {}
 
     def step(self, action: Action) -> tuple[np.ndarray, float, bool, bool, dict]:
-        if action == Action.Up:
-            self.controller.handle_up()
-        elif action == Action.Right:
-            self.controller.handle_right()
-        elif action == Action.Down:
-            self.controller.handle_down()
-        elif action == Action.Left:
-            self.controller.handle_left()
+        if action == Action.STRAIGHT:
+            self.model.snake.straight()
+        elif action == Action.TURN_RIGHt:
+            self.model.snake.turn_right()
+        elif action == Action.TURN_LEFT:
+            self.model.snake.turn_left()
         else:
             raise ValueError("Invalid action")
 
