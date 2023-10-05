@@ -1,5 +1,7 @@
 import os
 
+from pynput.keyboard import Key, Listener
+
 from game.controller import Controller
 from game.model import Model
 from game.stage import Stage
@@ -17,22 +19,24 @@ class Game:
             display_board(self.model.snake, self.model.food)
 
     def step(self) -> None:
-        while True:
-            match input("Enter action:\n0: Up 1: Down 2: Left 3: Right\ninput: "):
-                case "0":
-                    self.controller.handle_up()
-                    break
-                case "1":
-                    self.controller.handle_down()
-                    break
-                case "2":
-                    self.controller.handle_left()
-                    break
-                case "3":
-                    self.controller.handle_right()
-                    break
-                case _:
-                    print("Invalid input")
+        def on_press(key):
+            if key == Key.up:
+                self.controller.handle_up()
+            elif key == Key.down:
+                self.controller.handle_down()
+            elif key == Key.left:
+                self.controller.handle_left()
+            elif key == Key.right:
+                self.controller.handle_right()
+            else:
+                print("Invalid input")
+
+        def on_release(key):
+            return False
+
+        with Listener(on_press=on_press, on_release=on_release) as listener:
+            listener.join()
+
         self.model.update()
 
 
