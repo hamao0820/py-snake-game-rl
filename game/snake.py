@@ -1,4 +1,4 @@
-from .direction import Direction, Down, Left, Right, Up
+from .direction import Direction, Right
 from .position import Position
 
 
@@ -6,7 +6,6 @@ class Snake:
     def __init__(self) -> None:
         self._position_list: list[Position] = [Position(x=3, y=8), Position(x=2, y=8)]
         self.direction: Direction = Right()
-        self.prev_direction: Direction = Right()
         self.grow_flag: bool = False
         pass
 
@@ -23,17 +22,14 @@ class Snake:
             self._position_list.pop()
         self.grow_flag = False
 
-    def up(self) -> None:
-        self.direction = Up()
+    def turn_right(self) -> None:
+        self.direction = self.direction.turn_right()
 
-    def down(self) -> None:
-        self.direction = Down()
+    def turn_left(self) -> None:
+        self.direction = self.direction.turn_left()
 
-    def left(self) -> None:
-        self.direction = Left()
-
-    def right(self) -> None:
-        self.direction = Right()
+    def straight(self) -> None:
+        self.direction = self.direction.straight()
 
     def grow(self) -> None:
         self.grow_flag = True
