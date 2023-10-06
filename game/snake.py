@@ -53,10 +53,10 @@ class Snake:
 
         return (
             left_pos.x >= 1
-            or left_pos.x <= Stage.WIDTH
-            or left_pos.y >= 1
-            or left_pos.y <= Stage.HEIGHT
-            or left_pos not in self.body
+            and left_pos.x <= Stage.WIDTH
+            and left_pos.y >= 1
+            and left_pos.y <= Stage.HEIGHT
+            and left_pos not in self.body
         )
 
     @property
@@ -68,10 +68,10 @@ class Snake:
 
         return (
             right_pos.x >= 1
-            or right_pos.x <= Stage.WIDTH
-            or right_pos.y >= 1
-            or right_pos.y <= Stage.HEIGHT
-            or right_pos not in self.body
+            and right_pos.x <= Stage.WIDTH
+            and right_pos.y >= 1
+            and right_pos.y <= Stage.HEIGHT
+            and right_pos not in self.body
         )
 
     @property
@@ -83,8 +83,8 @@ class Snake:
 
         return (
             straight_pos.x >= 1
-            or straight_pos.x <= Stage.WIDTH
-            or straight_pos.y >= 1
-            or straight_pos.y <= Stage.HEIGHT
-            or straight_pos not in self.body
+            and straight_pos.x <= Stage.WIDTH
+            and straight_pos.y >= 1
+            and straight_pos.y <= Stage.HEIGHT
+            and straight_pos not in self.body
         )
