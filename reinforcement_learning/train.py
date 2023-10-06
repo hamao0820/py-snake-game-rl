@@ -15,16 +15,15 @@ class Train:
 
         reward_clipping = True  # 報酬のクリッピング
 
-        num_episode_plot = torch.tensor([300])  # 何エピソードで学習の進捗を確認するか
+        num_episode_plot = torch.tensor([100])  # 何エピソードで学習の進捗を確認するか
         num_episode_save = 100  # 何エピソードでモデルを保存するか
 
         device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-        device = torch.device("cpu")
 
         env = Env()
         agent = Agent(device=device, action_space=env.action_space)
 
-        terminated = True
+        done = True
         total_steps = 0
         count_update = 0
         steps_done = 0
@@ -32,7 +31,7 @@ class Train:
         reward_durations = []
 
         for i_episode in tqdm(range(num_episodes)):
-            if terminated == True:
+            if done:
                 state, info = env.reset()
                 t_state = torch.tensor(state, dtype=torch.float)
 
@@ -41,7 +40,7 @@ class Train:
                 action, eps_threshold = agent.e_greedy_select_action(t_state, steps_done)
                 t_action = torch.tensor([[action.value]])
                 steps_done += 1
-                observation, reward, terminated, truncated, info = env.step(action)
+                observation, reward, terminated, truncated, info = env.step(action, t)
                 t_observation = torch.tensor(observation, dtype=torch.float)
                 done = terminated or truncated
 
@@ -73,7 +72,7 @@ class Train:
                     np.arange(0, (i_episode / num_episode_plot + 1) * num_episode_plot, num_episode_plot),
                     torch.tensor(reward_durations, dtype=torch.float).numpy(),
                 )
-                plt.savefig(f"progress/reward_duration.png")
+                plt.savefig("progress/reward_duration.png")
                 plt.clf()
 
                 if (i_episode % num_episode_save) == 0:

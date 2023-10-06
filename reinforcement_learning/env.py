@@ -21,7 +21,7 @@ class Env:
         self.actions = []
         return array, {}
 
-    def step(self, action: Action) -> tuple[np.ndarray, float, bool, bool, dict]:
+    def step(self, action: Action, count: int) -> tuple[np.ndarray, float, bool, bool, dict]:
         if action == Action.STRAIGHT:
             self.model.snake.straight()
         elif action == Action.TURN_RIGHt:
@@ -38,9 +38,9 @@ class Env:
         try:
             observation = self._get_state()
         except IndexError:
-            observation = np.zeros((1, 16 * 16 * 3 + 4 + 4 + 3), dtype=np.uint8)
+            observation = np.zeros((1, 16 * 16 * 6 + 4 + 4 + 3), dtype=np.uint8)
         terminated = self.model.is_game_over()
-        truncated = False
+        truncated = count > 100 * (len(self.model.snake.body) + 1)
         reward = min(1, self.model.score.score / 30)
         if self.model.game_over:
             reward = -1
@@ -60,13 +60,6 @@ class Env:
         return image
 
     def _get_state(self) -> np.ndarray:
-        food_one_hot = np.zeros((len(self.model.board), len(self.model.board[0])), dtype=np.uint8)
-        food_one_hot[self.model.food.pos.y - 1][self.model.food.pos.x - 1] = 1
-        head_one_hot = np.zeros((len(self.model.board), len(self.model.board[0])), dtype=np.uint8)
-        head_one_hot[self.model.snake.head.y - 1][self.model.snake.head.x - 1] = 1
-        body_one_hot = np.zeros((len(self.model.board), len(self.model.board[0])), dtype=np.uint8)
-        for body in self.model.snake.body:
-            body_one_hot[body.y - 1][body.x - 1] = 1
         direction_one_hot = np.array(
             [
                 isinstance(self.model.snake.direction, Right),
@@ -95,12 +88,41 @@ class Env:
             dtype=np.uint8,
         )
 
+        width = len(self.model.board[0])
+        height = len(self.model.board)
+
+        array = np.zeros((3, height, width), dtype=np.uint8)
+        try:
+            array[0][self.model.snake.head.y - 1][self.model.snake.head.x - 1] = 1
+        except IndexError:
+            pass
+        for body in self.model.snake.body:
+            array[1][body.y - 1][body.x - 1] = 1
+        array[2][self.model.food.pos.y - 1][self.model.food.pos.x - 1] = 1
+        x_coordinate_chanel = np.zeros((1, height, width), dtype=np.float64)
+        for i in range(height):
+            for j in range(width):
+                x_coordinate_chanel[0][i][j] = j / (width - 1) * 2 - 1
+        y_coordinate_chanel = np.zeros((1, height, width), dtype=np.float64)
+        for i in range(height):
+            for j in range(width):
+                y_coordinate_chanel[0][i][j] = i / (height - 1) * 2 - 1
+        concentric_circle_chanel = np.zeros((1, height, width), dtype=np.float64)
+        center = (height + 1) / 2.0
+        for i in range(1, height + 1):
+            for j in range(1, width + 1):
+                concentric_circle_chanel[0][i - 1][j - 1] = (
+                    np.sqrt((i - center) ** 2 + (j - center) ** 2)
+                    / (np.sqrt((height - center) ** 2 + (width - center) ** 2))
+                ) * 2 - 1
+
         state = np.expand_dims(
             np.concatenate(
                 [
-                    food_one_hot.flatten(),
-                    head_one_hot.flatten(),
-                    body_one_hot.flatten(),
+                    array.flatten(),
+                    x_coordinate_chanel.flatten(),
+                    y_coordinate_chanel.flatten(),
+                    concentric_circle_chanel.flatten(),
                     direction_one_hot,
                     food_direction_one_hot,
                     danger_one_hot,
