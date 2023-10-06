@@ -9,6 +9,8 @@ from .action_space import Action, ActionSpace
 from .nnet import Dueling_Network
 from .replay_memory import ReplayMemory, Transition
 
+from typing import Literal
+
 
 class Agent:
     GAMMA = 0.99
@@ -20,7 +22,13 @@ class Agent:
     TAU = 0.005
     LR = 1e-4
 
-    def __init__(self, device: torch.device, action_space: ActionSpace, state_dict_path: str | None = None):
+    def __init__(
+        self,
+        device: torch.device,
+        action_space: ActionSpace,
+        state_dict_path: str | None = None,
+        mode: Literal["train"] | Literal["predict"] = "train",
+    ):
         self.device = device
         self.action_space = action_space
         self.policy_net = Dueling_Network(n_actions=self.action_space.n).to(device)
@@ -30,6 +38,10 @@ class Agent:
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.memory = ReplayMemory(Agent.SIZE_REPLAY_MEMORY)
         self.optimizer = optim.AdamW(self.policy_net.parameters(), lr=Agent.LR, amsgrad=True)
+        self.mode = mode
+        if self.mode == "predict":
+            self.policy_net.eval()
+            self.target_net.eval()
 
     def e_greedy_select_action(self, state: torch.Tensor, steps_done) -> tuple[Action, float]:
         eps_threshold = Agent.EPS_END + (Agent.EPS_START - Agent.EPS_END) * math.exp(
@@ -49,6 +61,10 @@ class Agent:
             self.action_space.action_space[torch.tensor([[random.randint(0, self.action_space.n - 1)]]).item()],
             eps_threshold,
         )
+
+    def select_action(self, state: torch.Tensor) -> Action:
+        with torch.no_grad():
+            return self.action_space.action_space[self.policy_net(state.to(self.device)).argmax().view(1, 1).item()]
 
     def update(self) -> None:
         if len(self.memory) < Agent.BATCH_SIZE:
