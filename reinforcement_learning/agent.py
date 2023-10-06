@@ -12,9 +12,9 @@ from .replay_memory import ReplayMemory, Transition
 
 class Agent:
     GAMMA = 0.99
-    EPS_START = 0.9
-    EPS_END = 0.05
-    EPS_DECAY = 200
+    EPS_START = 0.6
+    EPS_END = 0.01
+    EPS_DECAY = 100000
     SIZE_REPLAY_MEMORY = 1000
     BATCH_SIZE = 32
     TAU = 0.005
