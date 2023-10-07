@@ -14,7 +14,7 @@ from typing import Literal
 
 class Agent:
     GAMMA = 0.99
-    EPS_START = 0.6
+    EPS_START = 0.15
     EPS_END = 0.01
     EPS_DECAY = 100000
     SIZE_REPLAY_MEMORY = 1000

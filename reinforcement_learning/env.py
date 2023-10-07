@@ -43,7 +43,7 @@ class Env:
             observation = np.zeros((1, 16 * 16 * 6 + 4 + 4 + 3), dtype=np.uint8)
         terminated = self.model.is_game_over()
         truncated = count > 100 * (len(self.model.snake.body) + 1)
-        reward = (self.model.score.score - self.prev_score) * np.exp(-1 / (self.prev_score + 1))
+        reward = (self.model.score.score - self.prev_score) * np.exp(-10 / (self.prev_score + 1))
         self.prev_score = self.model.score.score
         if self.model.game_over:
             reward = -1

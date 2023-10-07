@@ -21,7 +21,11 @@ class Train:
         device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
         env = Env()
-        agent = Agent(device=device, action_space=env.action_space)
+        agent = Agent(
+            device=device,
+            action_space=env.action_space,
+            state_dict_path="model_weights/9ff7f581fbb3c9b5492da245ab996b1caef239ff/snake-game_policy.pth",
+        )
 
         done = True
         total_steps = 0
