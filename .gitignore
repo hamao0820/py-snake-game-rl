@@ -4,3 +4,4 @@ img
 model_weights
 progress
 actions
+.mypy_cache
