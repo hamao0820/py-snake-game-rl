@@ -17,7 +17,7 @@ class Predictor:
             device=device,
             action_space=self.env.action_space,
             mode="predict",
-            state_dict_path="model_weights/9ff7f581fbb3c9b5492da245ab996b1caef239ff/snake-game_policy.pth",
+            state_dict_path="model_weights/bd9e8c4d7c9be59e463e926aeeb20c8891bb7f4e/snake-game_policy.pth",
         )
 
     def run(self, num_episodes: int = 1):
